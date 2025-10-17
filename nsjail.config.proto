@@ -1,0 +1,60 @@
+name: "python-executor"
+mode: ONCE
+hostname: "python-executor"
+log_level: ERROR
+time_limit: 30
+
+rlimit_as: 512        # 512MB memory limit
+rlimit_cpu: 10        # 10 seconds CPU time
+rlimit_fsize: 1048576 # 1MB file size limit
+rlimit_nofile: 64     # Limit open files 
+
+envar: "HOME=/tmp"
+envar: "PYTHONPATH=/usr/local/lib/python3.11/site-packages"
+envar: "PATH=/usr/local/bin:/usr/bin:/bin"
+
+cwd: "/tmp"
+
+# Security settings - minimal for compatibility
+clone_newnet: true    # New network namespace (no network access)
+clone_newuser: false  # Disable user namespace for compatibility
+clone_newns: false    # Disable mount namespace for compatibility
+skip_setsid: true     # Skip setsid
+keep_caps: false      # Don't keep capabilities
+keep_env: false       # Don't keep environment
+mount_proc: false     # Don't mount proc
+
+mount {
+    src: "/usr/local/lib/python3.11/site-packages"
+    dst: "/usr/local/lib/python3.11/site-packages"
+    is_bind: true
+    rw: false  # Read-only
+}
+
+mount {
+    src: "/usr/lib/x86_64-linux-gnu"
+    dst: "/usr/lib/x86_64-linux-gnu"
+    is_bind: true
+    rw: false  # Read-only
+}
+
+mount {
+    dst: "/tmp"
+    fstype: "tmpfs"
+    rw: true
+    options: "size=100M"  # Increased for pandas/numpy
+}
+
+mount {
+    src: "/dev/null"
+    dst: "/dev/null"
+    is_bind: true
+    rw: true
+}
+
+mount {
+    src: "/dev/zero"
+    dst: "/dev/zero"
+    is_bind: true
+    rw: true
+}
