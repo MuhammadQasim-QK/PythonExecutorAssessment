@@ -23,34 +23,34 @@ class PythonExecutor:
                 with open(script_path, 'w') as f:
                     f.write(script_content)                
                 wrapper_script = f'''import sys
-                                import json
-                                import traceback
+import json
+import traceback
 
-                                try:
-                                    # Import and execute the script
-                                    exec(open('{script_path}').read(), globals())
-                                    
-                                    # Check if main function exists
-                                    if 'main' not in globals():
-                                        print("ERROR: No main() function found", file=sys.stderr)
-                                        sys.exit(1)
-                                    
-                                    # Execute main function
-                                    result = main()
-                                    
-                                    # Check if result is JSON serializable
-                                    try:
-                                        json.dumps(result)
-                                        print(json.dumps(result))
-                                    except (TypeError, ValueError):
-                                        print("ERROR: main() function must return JSON serializable data", file=sys.stderr)
-                                        sys.exit(1)
-                                        
-                                except Exception as e:
-                                    print(f"ERROR: {{str(e)}}", file=sys.stderr)
-                                    traceback.print_exc(file=sys.stderr)
-                                    sys.exit(1)
-                                '''
+try:
+    # Import and execute the script
+    exec(open('{script_path}').read(), globals())
+    
+    # Check if main function exists
+    if 'main' not in globals():
+        print("ERROR: No main() function found", file=sys.stderr)
+        sys.exit(1)
+    
+    # Execute main function
+    result = main()
+    
+    # Check if result is JSON serializable
+    try:
+        json.dumps(result)
+        print(json.dumps(result))
+    except (TypeError, ValueError):
+        print("ERROR: main() function must return JSON serializable data", file=sys.stderr)
+        sys.exit(1)
+        
+except Exception as e:
+    print(f"ERROR: {{str(e)}}", file=sys.stderr)
+    traceback.print_exc(file=sys.stderr)
+    sys.exit(1)
+'''
                 wrapper_path = os.path.join(temp_dir, "wrapper.py")
                 with open(wrapper_path, 'w') as f:
                     f.write(wrapper_script)
